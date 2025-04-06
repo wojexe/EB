@@ -8,23 +8,23 @@ import (
 )
 
 type Model struct {
-	ID        uint `gorm:"primarykey"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        uint           `json:"id" gorm:"primarykey"`
+	CreatedAt time.Time      `json:"createdAt"`
+	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 type Product struct {
 	Model
-	Name       string
-	Price      decimal.Decimal `gorm:"type:decimal(10,2);"`
-	CategoryID *uint
-	Category   *Category `json:"-"`
+	Name       string          `json:"name"`
+	Price      decimal.Decimal `json:"price" gorm:"type:decimal(10,2);"`
+	CategoryID *uint           `json:"categoryId"`
+	Category   *Category       `json:"-"`
 }
 
 type Category struct {
 	Model
-	Name     string
+	Name     string    `json:"name"`
 	Products []Product `json:"-"`
 }
 
