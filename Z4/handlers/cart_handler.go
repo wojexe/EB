@@ -18,16 +18,16 @@ type CartHandler struct {
 func (h *CartHandler) RegisterRoutes(e *echo.Echo) error {
 	carts := e.Group("/carts")
 
-	carts.GET("/", h.GetCarts)
+	carts.GET("", h.GetCarts)
 	carts.GET("/:id", h.GetCart)
-	carts.POST("/", h.CreateCart)
+	carts.POST("", h.CreateCart)
 	carts.DELETE("/:id", h.DeleteCart)
 
 	cart_products := carts.Group("/:id/products")
-	cart_products.GET("/", h.GetCartProducts)
+	cart_products.GET("", h.GetCartProducts)
 	cart_products.POST("/:productId", h.AddProductToCart)
 	cart_products.DELETE("/:productId", h.RemoveProductFromCart)
-	cart_products.DELETE("/", h.ClearCart)
+	cart_products.DELETE("", h.ClearCart)
 
 	return nil
 }
@@ -65,10 +65,6 @@ func (h *CartHandler) GetCart(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, cart)
-}
-
-type CreateCartRequest struct {
-	ProductIDs []models.Product `json:"products"`
 }
 
 func (h *CartHandler) CreateCart(c echo.Context) error {

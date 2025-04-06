@@ -3,9 +3,12 @@ package environment
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
+	"gitlab.com/greyxor/slogor"
 )
 
 type RuntimeEnvironment string
@@ -16,8 +19,9 @@ const (
 )
 
 type Environment struct {
-	DSN string
-	ENV RuntimeEnvironment
+	DSN    string
+	ENV    RuntimeEnvironment
+	Logger *slog.Logger
 }
 
 func Initialize() Environment {
@@ -28,9 +32,12 @@ func Initialize() Environment {
 		log.Println(e)
 	}
 
+	env := parseRuntimeEnvironment(getRequiredEnv("ENV"))
+
 	return Environment{
-		DSN: getRequiredEnv("DATABASE_URI"),
-		ENV: parseRuntimeEnvironment(getRequiredEnv("ENV")),
+		DSN:    getRequiredEnv("DATABASE_URI"),
+		ENV:    env,
+		Logger: initializeLogger(env),
 	}
 }
 
@@ -53,4 +60,24 @@ func parseRuntimeEnvironment(s string) RuntimeEnvironment {
 	default:
 		panic(fmt.Errorf("Invalid runtime environment: %s", s))
 	}
+}
+
+func initializeLogger(env RuntimeEnvironment) *slog.Logger {
+	opts := &slog.HandlerOptions{Level: slog.LevelDebug}
+
+	var handler slog.Handler = slogor.NewHandler(
+		os.Stderr,
+		slogor.SetLevel(slog.LevelDebug),
+		slogor.SetTimeFormat(time.DateTime),
+	)
+
+	if env == Production {
+		handler = slog.NewJSONHandler(os.Stdout, opts)
+	}
+
+	logger := slog.New(handler)
+
+	slog.SetDefault(logger)
+
+	return logger
 }

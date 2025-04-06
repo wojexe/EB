@@ -14,6 +14,6 @@ func main() {
 	repos := repositories.Initialize(db)
 	handlers := handlers.Initialize(repos)
 
-	server := server.Initialize(handlers)
+	server := server.Initialize(handlers, env)
 	server.Start()
 }

@@ -3,19 +3,21 @@ package server
 import (
 	"fmt"
 	"log"
+	"store_backend/environment"
 	"store_backend/handlers"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	slogecho "github.com/samber/slog-echo"
 )
 
 type Server struct {
 	echo *echo.Echo
 }
 
-func Initialize(handlers []handlers.Handler) Server {
+func Initialize(handlers []handlers.Handler, env environment.Environment) Server {
 	e := echo.New()
 
 	e.HideBanner = true
@@ -23,7 +25,7 @@ func Initialize(handlers []handlers.Handler) Server {
 		validator: validator.New(validator.WithRequiredStructEnabled()),
 	}
 
-	configureMiddleware(e)
+	configureMiddleware(e, env)
 
 	for _, handler := range handlers {
 		handler.RegisterRoutes(e)
@@ -38,11 +40,14 @@ func (s Server) Start() {
 	s.echo.Logger.Fatal(s.echo.Start(":1323"))
 }
 
-func configureMiddleware(e *echo.Echo) {
-	e.Pre(middleware.AddTrailingSlash())
+func configureMiddleware(e *echo.Echo, env environment.Environment) {
+	slogEcho := slogecho.New(env.Logger)
 
-	e.Use(middleware.Logger())
+	e.Pre(middleware.RemoveTrailingSlash())
+
+	e.Use(slogEcho)
 	e.Use(middleware.Secure())
+	e.Use(middleware.Recover())
 }
 
 func printRoutes(routes []*echo.Route) string {

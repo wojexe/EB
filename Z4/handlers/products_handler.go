@@ -19,9 +19,9 @@ type ProductsHandler struct {
 func (h *ProductsHandler) RegisterRoutes(e *echo.Echo) error {
 	products := e.Group("/products")
 
-	products.GET("/", h.GetProducts)
+	products.GET("", h.GetProducts)
 	products.GET("/:id", h.GetProduct)
-	products.POST("/", h.CreateProduct)
+	products.POST("", h.CreateProduct)
 	products.PUT("/:id", h.UpdateProduct)
 	products.DELETE("/:id", h.DeleteProduct)
 
