@@ -10,3 +10,5 @@ Należy stworzyć projekt w echo w Go. Należy wykorzystać gorm do stworzenia 5
 
 Przykładowe dane są automatycznie wypełniane dzięki database/seeds.go.
 
+https://github.com/user-attachments/assets/f6affaac-d8d9-4623-8592-944f807ac726
+
