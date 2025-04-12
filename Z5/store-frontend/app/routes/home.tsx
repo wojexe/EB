@@ -1,27 +1,47 @@
+import { Product } from "~/components/product";
 import type { Route } from "./+types/home";
-import { getProducts } from "lib/api";
+import { addProductToCart, getProducts } from "lib/api";
+import { Form } from "react-router";
+
+import { loader as rootLoader } from "../root";
 
 export function meta(_: Route.MetaArgs) {
-  return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
-  ];
+  return [{ title: "StoreFront Home" }];
 }
 
-export async function loader(_: Route.LoaderArgs) {
-  const products = await getProducts();
-
-  return products;
+export async function loader(args: Route.LoaderArgs) {
+  const loaderData = await rootLoader(args);
+  return loaderData;
 }
 
-export async function clientLoader(_: Route.ClientLoaderArgs) {
-  const products = await getProducts();
+export async function clientAction({ request }: Route.ClientActionArgs) {
+  const formData = await request.formData();
 
-  return products;
+  const cartId = formData.get("cartId");
+  const productId = formData.get("productId");
+
+  if (productId === null) {
+    throw new Error("Invalid product ID");
+  }
+
+  const cart = await addProductToCart(
+    parseInt(cartId as string),
+    parseInt(productId as string)
+  );
+
+  return null;
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const products = loaderData.map((product) => {
-    console.log(product);
-  });
+  const cartId = loaderData.cart?.id;
+  const products = loaderData.products.map((product) => (
+    <Product key={product.id} product={product} />
+  ));
+
+  return (
+    <Form method="post" className="grid gap-6 m-6 grid-cols-4">
+      <input type="hidden" name="cartId" value={cartId} />
+      {products}
+    </Form>
+  );
 }

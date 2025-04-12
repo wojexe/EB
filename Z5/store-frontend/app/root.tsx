@@ -1,14 +1,20 @@
 import {
+  data,
   isRouteErrorResponse,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { NavigationBar } from "./components/navbar";
+import { createCart, getCart, getProducts } from "lib/api";
+import { redirect } from "react-router";
+import * as v from "valibot";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -23,7 +29,45 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const cartID = url.searchParams.get("cartId");
+
+  let cart;
+
+  if (cartID) {
+    const { success, output: cartIdNumber } = v.safeParse(
+      v.pipe(
+        v.string(),
+        v.transform((value) => parseInt(value)),
+        v.minValue(1)
+      ),
+      cartID
+    );
+
+    if (success === false) {
+      return redirect("/");
+    }
+
+    try {
+      cart = await getCart(cartIdNumber);
+    } catch (error) {
+      console.error(error);
+      return redirect("/");
+    }
+  } else {
+    cart = await createCart();
+    return redirect(`/?cartId=${cart.id}`);
+  }
+
+  const products = await getProducts();
+
+  return { products, cart };
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const data = useLoaderData<typeof loader>();
+
   return (
     <html lang="en">
       <head>
@@ -33,7 +77,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {/* TODO)) navbar */}
+        <NavigationBar cart={data?.cart} />
 
         {children}
 
@@ -44,7 +88,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
+export default function App(_: Route.ComponentProps) {
   return <Outlet />;
 }
 
