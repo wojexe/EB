@@ -19,9 +19,10 @@ const (
 )
 
 type Environment struct {
-	DSN    string
-	ENV    RuntimeEnvironment
-	Logger *slog.Logger
+	DSN          string
+	ENV          RuntimeEnvironment
+	FRONTEND_URL string
+	Logger       *slog.Logger
 }
 
 func Initialize() Environment {
@@ -35,9 +36,11 @@ func Initialize() Environment {
 	env := parseRuntimeEnvironment(getRequiredEnv("ENV"))
 
 	return Environment{
-		DSN:    getRequiredEnv("DATABASE_URI"),
-		ENV:    env,
-		Logger: initializeLogger(env),
+		DSN: getRequiredEnv("DATABASE_URI"),
+		ENV: env,
+		// FRONTEND_URL: "http://192.168.117.3:3000",
+		FRONTEND_URL: os.Getenv("FRONTEND_URL"),
+		Logger:       initializeLogger(env),
 	}
 }
 
