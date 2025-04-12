@@ -48,6 +48,12 @@ func configureMiddleware(e *echo.Echo, env environment.Environment) {
 	e.Use(slogEcho)
 	e.Use(middleware.Secure())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Authorization", "*"},
+		AllowCredentials: true,
+	}))
 }
 
 func printRoutes(routes []*echo.Route) string {
