@@ -10,3 +10,5 @@ Należy stworzyć aplikację kliencką wykorzystując bibliotekę React.js. W ra
 - [x] 4.5 - Należy dodać skrypt uruchamiający aplikację serwerową oraz kliencką na dockerze via **docker compose**
 - [x] 5.0 - Należy wykorzystać ~axios’a~ fetch'a oraz dodać nagłówki pod CORS
 
+https://github.com/user-attachments/assets/05dc1a95-bc16-4b08-a910-87a384deacb7
+
