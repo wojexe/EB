@@ -15,6 +15,7 @@ export async function loader(args: Route.LoaderArgs) {
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
+  const cartID = parseInt((formData.get("cartID") as string) || "");
   const name = formData.get("name");
   const email = formData.get("email");
   const phone = formData.get("phone");
@@ -33,15 +34,13 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     zipCode,
   };
 
-  const url = new URL(request.url);
-  const cartID = parseInt(url.searchParams.get("cartId") || "");
-
   const response = await checkoutCart(cartID, data);
 
   return redirect("/");
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
+  const cartID = loaderData.cart.id;
   const products = loaderData.cart.products;
 
   const list = products.map((product) => (
@@ -63,13 +62,14 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       </div>
 
       <Form method="post">
-        <input type="text" placeholder="Name" />
-        <input type="email" placeholder="Email" />
-        <input type="tel" placeholder="Phone" />
-        <input type="text" placeholder="Address" />
-        <input type="text" placeholder="City" />
-        <input type="text" placeholder="Zip Code" />
-        <input type="text" placeholder="State" />
+        <input type="hidden" name="cartID" value={cartID} />
+        <input type="text" name="name" placeholder="Name" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="tel" name="phone" placeholder="Phone" required />
+        <input type="text" name="address" placeholder="Address" required />
+        <input type="text" name="city" placeholder="City" required />
+        <input type="text" name="zipCode" placeholder="Zip Code" required />
+        <input type="text" name="state" placeholder="State" required />
 
         <Button className="mt-3">Confirm and pay</Button>
       </Form>

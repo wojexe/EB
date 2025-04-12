@@ -1,6 +1,6 @@
 import * as v from "valibot";
 
-export const API_URL = "http://localhost:1323";
+export const API_URL = () => process.env.API_URL ?? "http://localhost:1323";
 
 const productSchema = v.object({
   id: v.number(),
@@ -16,7 +16,7 @@ export type Product = v.InferOutput<typeof productSchema>;
 const getProductsResponseSchema = v.array(productSchema);
 
 export async function getProducts() {
-  const response = await fetch(`${API_URL}/products`);
+  const response = await fetch(`${API_URL()}/products`);
   const json = await response.json();
 
   const validated = await v.parseAsync(getProductsResponseSchema, json);
@@ -34,7 +34,7 @@ const cartResponseSchema = v.object({
 export type Cart = v.InferOutput<typeof cartResponseSchema>;
 
 export async function createCart() {
-  const response = await fetch(`${API_URL}/carts`, {
+  const response = await fetch(`${API_URL()}/carts`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -47,7 +47,7 @@ export async function createCart() {
 }
 
 export async function getCart(cartId: number) {
-  const response = await fetch(`${API_URL}/carts/${cartId}`);
+  const response = await fetch(`${API_URL()}/carts/${cartId}`);
   const json = await response.json();
 
   const validated = await v.parseAsync(cartResponseSchema, json);
@@ -56,7 +56,7 @@ export async function getCart(cartId: number) {
 
 export async function addProductToCart(cartId: number, productId: number) {
   const response = await fetch(
-    `${API_URL}/carts/${cartId}/products/${productId}`,
+    `${API_URL()}/carts/${cartId}/products/${productId}`,
     {
       method: "POST",
     }
@@ -68,7 +68,7 @@ export async function addProductToCart(cartId: number, productId: number) {
 }
 
 export async function deleteCart(cartId: number) {
-  const response = await fetch(`${API_URL}/carts/${cartId}`, {
+  const response = await fetch(`${API_URL()}/carts/${cartId}`, {
     method: "DELETE",
   });
   const json = await response.json();
@@ -78,7 +78,7 @@ export async function deleteCart(cartId: number) {
 }
 
 export async function checkoutCart(cartId: number, data: any) {
-  const response = await fetch(`${API_URL}/carts/${cartId}/checkout`, {
+  const response = await fetch(`${API_URL()}/carts/${cartId}/checkout`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
