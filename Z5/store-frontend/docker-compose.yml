@@ -1,0 +1,25 @@
+services:
+  frontend:
+    image: 'wojexe/eb/store-frontend'
+    environment:
+      API_URL: "http://backend:1323"
+    ports:
+      - '3000:3000'
+    networks:
+      - network-backend
+    depends_on:
+      backend:
+        condition: service_started
+
+  backend:
+    image: 'wojexe/eb/store-backend'
+    environment:
+      FRONTEND_URL: "http://frontend:3000"
+    ports:
+      - '1323:1323'
+    networks:
+      - network-backend
+
+networks:
+  network-backend:
+

@@ -1,6 +1,7 @@
 package database
 
 import (
+	"os"
 	"store_backend/environment"
 	"store_backend/models"
 
@@ -29,7 +30,7 @@ func Initialize(env environment.Environment) *gorm.DB {
 		panic(err)
 	}
 
-	if env.ENV == environment.Development {
+	if env.ENV == environment.Development && os.Getenv("SEED") == "true" {
 		Seed(db)
 	}
 

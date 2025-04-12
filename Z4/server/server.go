@@ -48,6 +48,15 @@ func configureMiddleware(e *echo.Echo, env environment.Environment) {
 	e.Use(slogEcho)
 	e.Use(middleware.Secure())
 	e.Use(middleware.Recover())
+
+	frontendURL := "http://192.168.117.3:3000" // env.FRONTEND_URL
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins:     []string{"http://localhost:5173", frontendURL},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Authorization", "*"},
+		AllowCredentials: true,
+	}))
 }
 
 func printRoutes(routes []*echo.Route) string {

@@ -23,6 +23,8 @@ func (h *CartHandler) RegisterRoutes(e *echo.Echo) error {
 	carts.POST("", h.CreateCart)
 	carts.DELETE("/:id", h.DeleteCart)
 
+	carts.POST("/:id/checkout", h.DeleteCart)
+
 	cart_products := carts.Group("/:id/products")
 	cart_products.GET("", h.GetCartProducts)
 	cart_products.POST("/:productId", h.AddProductToCart)
