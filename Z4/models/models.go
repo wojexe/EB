@@ -30,5 +30,5 @@ type Category struct {
 
 type Cart struct {
 	Model
-	Products []Product `gorm:"many2many:cart_products;"`
+	Products []Product `json:"products" gorm:"many2many:cart_products;"`
 }
