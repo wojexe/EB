@@ -4,6 +4,8 @@ import { Link } from "react-router";
 import type { Cart } from "lib/api";
 
 export function NavigationBar({ cart }: { cart?: Cart }) {
+  const cartEmpty = cart?.products?.length === 0;
+
   return (
     <nav className="sticky top-0 z-50 bg-neutral-800 border-b-2 border-neutral-700">
       <div className="flex justify-between items-center p-4 text-white">
@@ -15,7 +17,11 @@ export function NavigationBar({ cart }: { cart?: Cart }) {
           <span className="font-bold text-xl">StoreFront</span>
         </Link>
 
-        <Link to={{ pathname: "/cart", search: `?cartId=${cart?.id}` }}>
+        <Link
+          className={cartEmpty ? "hidden" : ""}
+          to={{ pathname: "/cart", search: `?cartId=${cart?.id}` }}
+          data-testid="cart-link"
+        >
           <Button>
             <ShoppingCart />
           </Button>

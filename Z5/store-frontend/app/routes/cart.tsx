@@ -2,7 +2,7 @@ import type { Route } from "./+types/home";
 import { loader as rootLoader } from "../root";
 import { Product } from "~/components/product";
 import { Button } from "~/components/button";
-import { Link } from "react-router";
+import { Link, redirect } from "react-router";
 
 export function meta(_: Route.MetaArgs) {
   return [{ title: "StoreFront Cart" }];
@@ -10,6 +10,15 @@ export function meta(_: Route.MetaArgs) {
 
 export async function loader(args: Route.LoaderArgs) {
   const loaderData = await rootLoader(args);
+
+  if (loaderData instanceof Response) {
+    return loaderData;
+  }
+
+  if (loaderData.cart?.products?.length === 0) {
+    return redirect(`/?cartId=${loaderData.cart?.id}`);
+  }
+
   return loaderData;
 }
 
