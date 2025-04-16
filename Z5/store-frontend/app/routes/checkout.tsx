@@ -10,6 +10,15 @@ export function meta(_: Route.MetaArgs) {
 
 export async function loader(args: Route.LoaderArgs) {
   const loaderData = await rootLoader(args);
+
+  if (loaderData instanceof Response) {
+    return loaderData;
+  }
+
+  if (loaderData.cart?.products?.length === 0) {
+    return redirect(`/?cartId=${loaderData.cart?.id}`);
+  }
+
   return loaderData;
 }
 
